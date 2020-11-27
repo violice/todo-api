@@ -2,7 +2,6 @@ import express from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
 import { queryParser } from 'express-query-parser';
-import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import env from 'dotenv';
 
@@ -20,7 +19,6 @@ app.use(queryParser({
   parseNull: true,
   parseBoolean: true,
 }));
-app.use(cookieParser());
 app.use(cors);
 app.use(jwt);
 

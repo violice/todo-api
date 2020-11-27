@@ -1,20 +1,13 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import parseDomain from 'parse-domain';
 
 import prisma from 'prisma';
 
-const createToken = (user) => jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '14d' });
-
-const getDomain = (hostname) => {
-  if (hostname === 'localhost') return hostname;
-  const { domain, tld } = parseDomain(hostname);
-  return `${domain}.${tld}`;
-};
+const createToken = (user) => jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '30d' });
 
 const auth = async (req, res) => {
   try {
-    const { body: { username, password }, hostname } = req;
+    const { body: { username, password } } = req;
     if (!username) {
       return res.status(422).json({ error: 'Email is required' });
     }
@@ -33,10 +26,7 @@ const auth = async (req, res) => {
     }
     delete user.password;
     const token = createToken(user);
-    const domain = getDomain(hostname);
-    res.clearCookie('todo-app-token');
-    res.cookie('todo-app-token', token, { domain });
-    res.status(200).json(user);
+    res.status(200).json({ user, token });
   } catch (e) {
     res.status(422).json({ error: e.message, raw: e });
   }
